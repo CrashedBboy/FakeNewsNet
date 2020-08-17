@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from twython import TwythonError, TwythonRateLimitError
 
 
@@ -12,6 +13,17 @@ from util import Constants
 
 
 def dump_retweets_job(tweet: Tweet, config: Config, twython_connector: TwythonConnector):
+
+    dump_dir = "{}/{}/{}/{}".format(config.dump_location, tweet.news_source, tweet.label, tweet.news_id)
+    retweet_dir = "{}/retweets".format(dump_dir)
+    retweet_path = "{}/{}.json".format(retweet_dir, tweet.tweet_id)
+
+    if os.path.exists(retweet_path):
+        print("[PASSED] source:{}, label:{}, news:{}, retweet: tweet{}".format(tweet.news_source, tweet.label, tweet.news_id, tweet.tweet_id))
+        return
+    else:
+        print("[NEW] source:{}, label:{}, news:{}, retweet: tweet{}".format(tweet.news_source, tweet.label, tweet.news_id, tweet.tweet_id))
+
     retweets = []
     connection = None
     try:
@@ -27,11 +39,9 @@ def dump_retweets_job(tweet: Tweet, config: Config, twython_connector: TwythonCo
 
     retweet_obj = {"retweets": retweets}
 
-    dump_dir = "{}/{}/{}/{}".format(config.dump_location, tweet.news_source, tweet.label, tweet.news_id)
-    retweet_dir = "{}/retweets".format(dump_dir)
     create_dir(dump_dir)
     create_dir(retweet_dir)
-    json.dump(retweet_obj, open("{}/{}.json".format(retweet_dir, tweet.tweet_id), "w"))
+    json.dump(retweet_obj, open(retweet_path, "w"))
 
 
 def collect_retweets(news_list, news_source, label, config: Config):
