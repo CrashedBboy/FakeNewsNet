@@ -34,31 +34,56 @@ class DataCollectorFactory:
         elif feature_type == "user_followers":
             return UserFollowersCollector(self.config)
 
+'''
+parse config file into object and dict
 
+[return] config: an object containing all config attributes
+[return] data_choices: a list of dict object indicating data sources
+[return] data_features_to_collect: a list of string, features to be collected
+'''
 def init_config():
+
+    # read config file
     json_object = json.load(open("config.json"))
 
+    # save attributes of config into object
     config = Config(json_object["dataset_dir"], json_object["dump_location"], json_object["tweet_keys_file"],
                     int(json_object["num_process"]))
 
+    # list of object, e.g. [{"news_source": "politifact", "label": "fake"}, ... ]
     data_choices = json_object["data_collection_choice"]
+
+    # list of string, e.g. ["news_articles", "tweets", "retweets", "user_profile", "user_timeline_tweets", "user_followers", "user_following"]
     data_features_to_collect = json_object["data_features_to_collect"]
 
     return config, data_choices, data_features_to_collect
 
+'''
+logger setup
+'''
 def init_logging(config):
+
     format = '%(asctime)s %(process)d %(module)s %(levelname)s %(message)s'
-    # format = '%(message)s'
+
+    # set filename, format, level of logging service
     logging.basicConfig(
         filename='data_collection_{}.log'.format(str(int(time.time()))),
         level=logging.INFO,
         format=format)
+    
+    # also record log of module 'requests'
     logging.getLogger('requests').setLevel(logging.CRITICAL)
 
 
 def download_dataset():
+
+    # get values of config option
     config, data_choices, data_features_to_collect = init_config()
+
+    # setup logging service
     init_logging(config)
+
+    
     data_collector_factory = DataCollectorFactory(config)
 
     for feature_type in data_features_to_collect:
