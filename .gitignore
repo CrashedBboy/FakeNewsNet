@@ -1,3 +1,11 @@
+# python cacahe
 *.pyc
+
+# downloaded dataset
 code/fakenewsnet_dataset/
+
+# downloading log
 *.log
+
+# Twitter secret key
+code/resources/tweet_keys_file.json
