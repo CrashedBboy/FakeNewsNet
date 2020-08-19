@@ -46,15 +46,29 @@ def dump_retweets_job(tweet: Tweet, config: Config, twython_connector: TwythonCo
 
 def collect_retweets(news_list, news_source, label, config: Config):
     create_dir(config.dump_location)
-    create_dir("{}/{}".format(config.dump_location, news_source))
-    create_dir("{}/{}/{}".format(config.dump_location, news_source, label))
-
-    save_dir = "{}/{}/{}".format(config.dump_location, news_source, label)
+    create_dir(f"{config.dump_location}/{news_source}")
+    create_dir(f"{config.dump_location}/{news_source}/{label}")
 
     tweet_id_list = []
 
     for news in news_list:
+
+        # check whether the news is existed
+        news_path = f"{config.dump_location}/{news_source}/{label}/{news.news_id}/news content.json"
+
+        if not os.path.exists(news_path):
+            # print(f"News {news.news_id} is not existed, skip downloading retweets")
+            continue
+
         for tweet_id in news.tweet_ids:
+
+            # check whether the tweet is existed
+            tweet_path = f"{config.dump_location}/{news_source}/{label}/{news.news_id}/tweets/{tweet_id}.json"
+
+            if not os.path.exists(tweet_path):
+                # print(f"Tweet {tweet_id} is not existed, skip downloading retweets")
+                continue
+
             tweet_id_list.append(Tweet(tweet_id, news.news_id, news_source, label))
 
     multiprocess_data_collection(dump_retweets_job, tweet_id_list, (config, config.twython_connector), config)
