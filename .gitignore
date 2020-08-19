@@ -9,3 +9,6 @@ code/fakenewsnet_dataset/
 
 # Twitter secret key
 code/resources/tweet_keys_file.json
+
+# ignore setting files from VS Code
+.vscode/
