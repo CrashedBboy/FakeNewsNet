@@ -1,6 +1,7 @@
 import json
 import logging
 from multiprocessing.pool import Pool
+import os
 
 from util.TwythonConnector import TwythonConnector
 from twython import TwythonError, TwythonRateLimitError
@@ -23,25 +24,43 @@ class Tweet:
 
 
 def dump_tweet_information(tweet_chunk: list, config: Config, twython_connector: TwythonConnector):
-    """Collect info and dump info of tweet chunk containing atmost 100 tweets"""
+    """Collect info and dump info of tweet chunk containing at most 100 tweets"""
 
-    tweet_list = []
+    # skip downloading tweets which are already been downloaded
+    filtered_tweet_chunk = []
     for tweet in tweet_chunk:
-        tweet_list.append(tweet.tweet_id)
+        dump_dir = "{}/{}/{}/{}".format(config.dump_location, tweet.news_source, tweet.label, tweet.news_id)
+        tweet_dir = "{}/tweets".format(dump_dir)
+        tweet_path = f"{tweet_dir}/{tweet.tweet_id}.json"
+
+        if os.path.exists(tweet_path):
+            print(f"[PASSED] source:{tweet.news_source}, label:{tweet.label}, news:{tweet.news_id}")
+            continue
+        else:
+            print(f"[NEW] source:{tweet.news_source}, label:{tweet.label}, news:{tweet.news_id}")
+            filtered_tweet_chunk.append(tweet)
+
+    tweet_id_list = []
+    for tweet in filtered_tweet_chunk:
+        dump_dir = "{}/{}/{}/{}".format(config.dump_location, tweet.news_source, tweet.label, tweet.news_id)
+        tweet_dir = "{}/tweets".format(dump_dir)
+        tweet_path = f"{tweet_dir}/{tweet.tweet_id}.json"
+        tweet_id_list.append(tweet.tweet_id)
 
     try:
-        tweet_objects_map = twython_connector.get_twython_connection(Constants.GET_TWEET).lookup_status(id=tweet_list,
+        tweet_objects_map = twython_connector.get_twython_connection(Constants.GET_TWEET).lookup_status(id=tweet_id_list,
                                                                                                     include_entities=True,
                                                                                                     map=True)['id']
-        for tweet in tweet_chunk:
+        for tweet in filtered_tweet_chunk:
             tweet_object = tweet_objects_map[str(tweet.tweet_id)]
             if tweet_object:
                 dump_dir = "{}/{}/{}/{}".format(config.dump_location, tweet.news_source, tweet.label, tweet.news_id)
                 tweet_dir = "{}/tweets".format(dump_dir)
+                tweet_path = f"{tweet_dir}/{tweet.tweet_id}.json"
                 create_dir(dump_dir)
                 create_dir(tweet_dir)
 
-                json.dump(tweet_object, open("{}/{}.json".format(tweet_dir, tweet.tweet_id), "w"))
+                json.dump(tweet_object, open(tweet_path, "w"))
 
     except TwythonRateLimitError:
         logging.exception("Twython API rate limit exception")
@@ -57,15 +76,21 @@ def collect_tweets(news_list, news_source, label, config: Config):
     create_dir("{}/{}".format(config.dump_location, news_source))
     create_dir("{}/{}/{}".format(config.dump_location, news_source, label))
 
-    save_dir = "{}/{}/{}".format(config.dump_location, news_source, label)
-
-    tweet_id_list = []
+    tweet_list = []
 
     for news in news_list:
-        for tweet_id in news.tweet_ids:
-            tweet_id_list.append(Tweet(tweet_id, news.news_id, news_source, label))
 
-    tweet_chunks = equal_chunks(tweet_id_list, 100)
+        # check whether the news is existed
+        news_path = f"{config.dump_location}/{news_source}/{label}/{news.news_id}/news content.json"
+
+        if not os.path.exists(news_path):
+            # print(f"News {news.news_id} is not existed, skip downloading tweets")
+            continue
+
+        for tweet_id in news.tweet_ids:
+            tweet_list.append(Tweet(tweet_id, news.news_id, news_source, label))
+
+    tweet_chunks = equal_chunks(tweet_list, 100)
     multiprocess_data_collection(dump_tweet_information, tweet_chunks, (config, config.twython_connector), config)
 
 
