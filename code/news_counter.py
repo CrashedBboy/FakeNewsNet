@@ -8,6 +8,7 @@ RESULT = "fakenewsnet_dataset/politifact/fake/source.json"
 
 total_news_count = 0
 exist_news_count = 0
+tweeted_news_count = 0
 source_dict = {}
 for item in os.listdir(NEWS_DIR):
     news_dir_path = path.abspath( path.join(path.dirname(__file__), NEWS_DIR, item) )
@@ -28,7 +29,11 @@ for item in os.listdir(NEWS_DIR):
                 else:
                     source_dict[source] = 1
 
-print(f"total news: {total_news_count}, existed news: {exist_news_count}")
+            tweet_dir_path = path.join(news_dir_path, "tweets")
+            if path.exists(tweet_dir_path):
+                tweeted_news_count += 1
+
+print(f"total news: {total_news_count}, existed news: {exist_news_count}, tweeted news: {tweeted_news_count}")
 
 result_file_path = path.abspath( path.join(path.dirname(__file__), RESULT) )
 
