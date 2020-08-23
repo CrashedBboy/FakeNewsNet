@@ -35,6 +35,20 @@ def dump_tweet_information(tweet_chunk: list, config: Config, twython_connector:
 
         if os.path.exists(tweet_path):
             print(f"[PASSED] source:{tweet.news_source}, label:{tweet.label}, news:{tweet.news_id}")
+
+            # save user profile stored in tweet
+            user_profiles_folder = f"{config.dump_location}/user_profiles"
+
+            with open(tweet_path, "r") as tweet_file:
+                tweet_dict = json.loads(tweet_file.read())
+                user_id = tweet_dict['user']['id']
+                user_profile_path = f"{user_profiles_folder}/{user_id}.json"
+
+                if not os.path.exists(user_profile_path):
+                    print(f"[NEW] User profile: {user_id}")
+                    with open(user_profile_path, "w") as user_profile_file:
+                        user_profile_file.write(json.dumps(tweet_dict['user']))
+
             continue
         else:
             print(f"[NEW] source:{tweet.news_source}, label:{tweet.label}, news:{tweet.news_id}")
@@ -59,8 +73,17 @@ def dump_tweet_information(tweet_chunk: list, config: Config, twython_connector:
                 tweet_path = f"{tweet_dir}/{tweet.tweet_id}.json"
                 create_dir(dump_dir)
                 create_dir(tweet_dir)
-
                 json.dump(tweet_object, open(tweet_path, "w"))
+
+                # save user profile stored in tweet
+                user_profiles_folder = f"{config.dump_location}/user_profiles"
+                user_id = tweet_object['user']['id']
+                user_profile_path = f"{user_profiles_folder}/{user_id}.json"
+
+                if not os.path.exists(user_profile_path):
+                    print(f"[NEW] User profile: {user_id}")
+                    with open(user_profile_path, "w") as user_profile_file:
+                        user_profile_file.write(json.dumps(tweet_object['user']))
 
     except TwythonRateLimitError:
         logging.exception("Twython API rate limit exception")
@@ -73,8 +96,11 @@ def dump_tweet_information(tweet_chunk: list, config: Config, twython_connector:
 
 def collect_tweets(news_list, news_source, label, config: Config):
     create_dir(config.dump_location)
+    # create dir for tweets
     create_dir("{}/{}".format(config.dump_location, news_source))
     create_dir("{}/{}/{}".format(config.dump_location, news_source, label))
+    # create dir for user profiles
+    create_dir(f"{config.dump_location}/user_profiles")
 
     tweet_list = []
 
