@@ -116,6 +116,7 @@ def collect_tweets(news_list, news_source, label, config: Config):
         for tweet_id in news.tweet_ids:
             tweet_list.append(Tweet(tweet_id, news.news_id, news_source, label))
 
+    print(f"Total tweets to be downloaded: {len(tweet_list)}")
     tweet_chunks = equal_chunks(tweet_list, 100)
     multiprocess_data_collection(dump_tweet_information, tweet_chunks, (config, config.twython_connector), config)
 
