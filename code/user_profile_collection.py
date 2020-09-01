@@ -17,8 +17,9 @@ def get_user_ids_in_folder(samples_folder):
     user_ids = set()
 
     for news_id in os.listdir(samples_folder):
-        news_dir = "{}/{}".format(samples_folder, news_id)
-        tweets_dir = "{}/{}/tweets".format(samples_folder, news_id)
+        news_dir = f"{samples_folder}/{news_id}"
+        tweets_dir = f"{news_dir}/tweets"
+
         if is_folder_exists(news_dir) and is_folder_exists(tweets_dir):
 
             for tweet_file in os.listdir(tweets_dir):
@@ -28,6 +29,17 @@ def get_user_ids_in_folder(samples_folder):
 
     return user_ids
 
+def get_user_ids_from_profile(dataset_folder):
+
+    user_ids = []
+
+    user_profile_path = f"{dataset_folder}/user_profiles"
+
+    for profile in os.listdir(user_profile_path):
+        user_id = int(profile.split(".json")[0])
+        user_ids.append(user_id)
+
+    return user_ids
 
 def dump_user_profile_job(user_id, save_location, twython_connector: TwythonConnector):
     profile_info = None
@@ -182,18 +194,26 @@ class UserFollowersCollector(DataCollector):
         super(UserFollowersCollector, self).__init__(config)
 
     def collect_data(self, choices):
-        all_user_ids = set()
 
-        for choice in choices:
-            all_user_ids.update(get_user_ids_in_folder(
-                "{}/{}/{}".format(self.config.dump_location, choice["news_source"], choice["label"])))
+        use_id_from_profile = True
 
-        user_followers_folder = "{}/{}".format(self.config.dump_location, "user_followers")
+        # collect user IDs
+        if use_id_from_profile:
+            all_user_ids = get_user_ids_from_profile(self.config.dump_location) # List object returned
+
+        else:
+            all_user_ids = set()
+            for choice in choices:
+                choice_dir = f"{self.config.dump_location}/{choice['news_source']}/{choice['label']}"
+                all_user_ids.update(get_user_ids_in_folder(choice_dir)) # Set object returned
+
+            all_user_ids = list(all_user_ids)
+
+        # create dir to store user followers
+        user_followers_folder = f"{self.config.dump_location}/user_followers"
         create_dir(user_followers_folder)
 
-        multiprocess_data_collection(dump_user_followers, list(all_user_ids), (user_followers_folder,
-                                                                                       self.config.twython_connector),
-                                     self.config)
+        multiprocess_data_collection(dump_user_followers, all_user_ids, (user_followers_folder, self.config.twython_connector), self.config)
 
 
 class UserFollowingCollector(DataCollector):
