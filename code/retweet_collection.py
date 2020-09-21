@@ -73,6 +73,15 @@ def collect_retweets(news_list, news_source, label, config: Config):
 
     multiprocess_data_collection(dump_retweets_job, tweet_id_list, (config, config.twython_connector), config)
 
+def collect_retweets_one_month(news_list, news_source, label, config: Config, hop_number):
+
+    a = 1
+    # create dir
+
+    # for each news:
+    #   collect N-hop tweet id, examine its datetime(posted in one month), append it into list
+
+    # use multiprocess_data_collection(dump_more_retweets_job) to get retweets
 
 class RetweetCollector(DataCollector):
 
@@ -83,3 +92,15 @@ class RetweetCollector(DataCollector):
         for choice in choices:
             news_list = self.load_news_file(choice)
             collect_retweets(news_list, choice["news_source"], choice["label"], self.config)
+
+    # get all retweets in one month
+    def collect_more_data(self, choices):
+        for choice in choices:
+            news_list = self.load_news_file(choice)
+            
+            # BFS
+            hop_index = 3 # Tweets(hop 1), Retweets(hop 2), <.....what we aim to fetch, hop id starts from 3......>
+            while True:
+                break # temp
+                # check whether folder of N-1 hop has file
+                # collect_retweets_one_month, hop = hop_index
