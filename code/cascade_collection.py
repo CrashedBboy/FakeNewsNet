@@ -12,7 +12,8 @@ from util.util import DataCollector
 from util import Constants
 
 def is_date_in_range(cascade_start_date, rt_date, config):
-    if (rt_date - cascade_start_date) <= config.cascade_time_limitation:
+    time_difference = (rt_date - cascade_start_date)
+    if time_difference.days <= config.cascade_time_limitation:
         return True
     else:
         return False
@@ -124,9 +125,10 @@ def collect_retweets(news_list, news_source, label, config: Config, hop_index):
 
                         if cascade_start_date == None:
                             cascade_start_date = tweet_date
-                        elif tweet_date > cascade_start_date:
+                        elif tweet_date < cascade_start_date:
                             cascade_start_date = tweet_date
         
+        print(cascade_start_date)
         if cascade_start_date == None:
             continue
 
@@ -149,6 +151,7 @@ def collect_retweets(news_list, news_source, label, config: Config, hop_index):
                         tweet_id_list.append(Tweet(rt['id'], news.news_id, news_source, label, hop_index))
 
     if len(tweet_id_list) == 0:
+        print("Return False")
         return False
     else:
         multiprocess_data_collection(dump_retweets_job, tweet_id_list, (config, config.twython_connector), config)
