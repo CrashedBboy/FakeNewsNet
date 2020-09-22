@@ -16,11 +16,12 @@ from util.util import equal_chunks
 
 class Tweet:
 
-    def __init__(self, tweet_id, news_id, news_source, label):
+    def __init__(self, tweet_id, news_id, news_source, label, hop_index = None):
         self.tweet_id = tweet_id
         self.news_id = news_id
         self.news_source = news_source
         self.label = label
+        self.hop_index = hop_index
 
 
 def dump_tweet_information(tweet_chunk: list, config: Config, twython_connector: TwythonConnector):

@@ -30,11 +30,12 @@ class News:
 
 class Config:
 
-    def __init__(self, data_dir, data_collection_dir, tweet_keys_file, num_process):
+    def __init__(self, data_dir, data_collection_dir, tweet_keys_file, num_process, cascade_time_limitation = 30):
         self.dataset_dir = data_dir
         self.dump_location = data_collection_dir
         self.tweet_keys_file = tweet_keys_file
         self.num_process = num_process
+        self.cascade_time_limitation = cascade_time_limitation
 
         self.twython_connector = TwythonConnector("localhost:5000", tweet_keys_file)
 

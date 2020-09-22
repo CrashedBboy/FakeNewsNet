@@ -7,9 +7,9 @@ from util.util import Config, News
 
 from news_content_collection import NewsContentCollector
 from retweet_collection import RetweetCollector
+from cascade_collection import RetweetCascadeCollector
 from tweet_collection import TweetCollector
-from user_profile_collection import UserProfileCollector, UserTimelineTweetsCollector, UserFollowingCollector, \
-    UserFollowersCollector
+from user_profile_collection import UserProfileCollector, UserTimelineTweetsCollector, UserFollowingCollector, UserFollowersCollector
 
 
 class DataCollectorFactory:
@@ -33,6 +33,8 @@ class DataCollectorFactory:
             return UserFollowingCollector(self.config)
         elif feature_type == "user_followers":
             return UserFollowersCollector(self.config)
+        elif feature_type == "retweet_cascade":
+            return RetweetCascadeCollector(self.config)
 
 '''
 parse config file into object and dict
@@ -48,7 +50,7 @@ def init_config():
 
     # save attributes of config into object
     config = Config(json_object["dataset_dir"], json_object["dump_location"], json_object["tweet_keys_file"],
-                    int(json_object["num_process"]))
+                    int(json_object["num_process"]), int(json_object["cascade_time_limitation"]))
 
     # list of object, e.g. [{"news_source": "politifact", "label": "fake"}, ... ]
     data_choices = json_object["data_collection_choice"]
