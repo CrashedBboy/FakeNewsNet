@@ -11,6 +11,6 @@
     }
   ],
 
-  "data_features_to_collect" : ["retweets"],
+  "data_features_to_collect" : ["retweet_cascade"],
   "cascade_time_limitation": 30
 }
