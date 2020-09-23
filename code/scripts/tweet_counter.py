@@ -3,8 +3,8 @@ from os import path
 
 import json
 
-NEWS_DIR = "fakenewsnet_dataset/politifact/fake"
-RESULT = "fakenewsnet_dataset/politifact/fake/tweet.json"
+NEWS_DIR = "../fakenewsnet_dataset/politifact/fake"
+RESULT = "../fakenewsnet_dataset/politifact/fake/tweet.json"
 
 tweet_count = 0
 for item in os.listdir(NEWS_DIR):

@@ -3,8 +3,8 @@ from os import path
 
 import json
 
-NEWS_DIR = "fakenewsnet_dataset/politifact/fake"
-RESULT = "fakenewsnet_dataset/politifact/fake/source.json"
+NEWS_DIR = "../fakenewsnet_dataset/politifact/fake"
+RESULT = "../fakenewsnet_dataset/politifact/fake/source.json"
 
 total_news_count = 0
 exist_news_count = 0
