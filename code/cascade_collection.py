@@ -127,6 +127,13 @@ def collect_retweets(news_list, news_source, label, config: Config, hop_index):
                             cascade_start_date = tweet_date
                         elif tweet_date < cascade_start_date:
                             cascade_start_date = tweet_date
+                # save start date back to news dir
+                with open(f"{first_tweets_dir}/first_date.json", "w") as date_file:
+                    date_file.write(json.dumps({
+                        "year": cascade_start_date.year,
+                        "month": cascade_start_date.month,
+                        "day": cascade_start_date.day
+                    }))
         
         print(cascade_start_date)
         if cascade_start_date == None:
@@ -151,12 +158,10 @@ def collect_retweets(news_list, news_source, label, config: Config, hop_index):
                         tweet_id_list.append(Tweet(rt['id'], news.news_id, news_source, label, hop_index))
 
     if len(tweet_id_list) == 0:
-        print("Return False")
+        print(f"There's no parent tweet in the time range limitation, hop {hop_index} retweet crawling stopped")
         return False
     else:
         multiprocess_data_collection(dump_retweets_job, tweet_id_list, (config, config.twython_connector), config)
-
-        print("Return True")
         return True
 
 class RetweetCascadeCollector(DataCollector):
