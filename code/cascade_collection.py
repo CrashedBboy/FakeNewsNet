@@ -177,3 +177,5 @@ class RetweetCascadeCollector(DataCollector):
                 if should_continue == False:
                     # there's no retweet in one month anymore
                     break
+
+                hop_index += 1
