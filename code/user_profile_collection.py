@@ -215,6 +215,30 @@ class UserFollowersCollector(DataCollector):
 
         multiprocess_data_collection(dump_user_followers, all_user_ids, (user_followers_folder, self.config.twython_connector), self.config)
 
+class RetweetUserFollowersCollector(DataCollector):
+
+    def __init__(self, config):
+        super(RetweetUserFollowersCollector, self).__init__(config)
+
+    def collect_data(self, choices):
+
+        # create dir to store user followers
+        user_followers_folder = f"{self.config.dump_location}/rt_user_followers"
+        create_dir(user_followers_folder)
+
+        user_id_list_path = f"{self.config.dump_location}/rt_user_ids_1.json" # number need to be set
+
+        final_user_id_list = []
+
+        with open(user_id_list_path, "r") as id_file:
+            id_list = json.loads(id_file.read())['users']
+
+            for uid in id_list:
+                if not os.path.exists(f"{user_followers_folder}/{uid}.json"):
+                    final_user_id_list.append(int(uid))
+
+            multiprocess_data_collection(dump_user_followers, final_user_id_list, (user_followers_folder, self.config.twython_connector), self.config)
+
 
 class UserFollowingCollector(DataCollector):
 

@@ -9,7 +9,7 @@ from news_content_collection import NewsContentCollector
 from retweet_collection import RetweetCollector
 from cascade_collection import RetweetCascadeCollector
 from tweet_collection import TweetCollector
-from user_profile_collection import UserProfileCollector, UserTimelineTweetsCollector, UserFollowingCollector, UserFollowersCollector
+from user_profile_collection import UserProfileCollector, UserTimelineTweetsCollector, UserFollowingCollector, UserFollowersCollector, RetweetUserFollowersCollector
 
 
 class DataCollectorFactory:
@@ -35,6 +35,8 @@ class DataCollectorFactory:
             return UserFollowersCollector(self.config)
         elif feature_type == "retweet_cascade":
             return RetweetCascadeCollector(self.config)
+        elif feature_type == "retweet_user_followers":
+            return RetweetUserFollowersCollector(self.config)
 
 '''
 parse config file into object and dict
