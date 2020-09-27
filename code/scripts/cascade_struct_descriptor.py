@@ -90,12 +90,7 @@ for item in os.listdir(dataset_dir):
 
 # [RESULT]: post per cascade
 # count the occurance
-POST_PER_CASCADE_FREQUENCY = {}
-for n in POST_PER_CASCADE:
-    if n in POST_PER_CASCADE_FREQUENCY:
-        POST_PER_CASCADE_FREQUENCY[n] += 1
-    else:
-        POST_PER_CASCADE_FREQUENCY[n] = 1
+POST_PER_CASCADE_FREQUENCY = {occurence: POST_PER_CASCADE.count(occurence) for occurence in set(POST_PER_CASCADE)}
 
 POST_PER_CASCADE = np.array(POST_PER_CASCADE)
 print(f"[#post per cascade] min:{POST_PER_CASCADE.min()}, max:{POST_PER_CASCADE.max()}, average:{POST_PER_CASCADE.mean()}, median: {np.median(POST_PER_CASCADE)}")
