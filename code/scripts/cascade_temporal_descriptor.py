@@ -60,6 +60,8 @@ LIFESPAN_PER_CASCADE = [] # lifespan of all cascades
 LIFESPAN_PER_CASCADE_RT = [] # lifespan of cascades having Replies / Quotes / Retweets
 LIFESPAN_PER_NEWS = []
 
+CASCADE_SIZE = []
+
 # iterate all news
 for item in os.listdir(dataset_dir):
 
@@ -79,7 +81,7 @@ for item in os.listdir(dataset_dir):
     NEWS_COUNT += 1
     print(f"{NEWS_COUNT}: {item}")
 
-    # if NEWS_COUNT > 40:
+    # if NEWS_COUNT > 5:
     #     break
 
     news_post_count = 0
@@ -146,6 +148,10 @@ for item in os.listdir(dataset_dir):
                 LIFESPAN_PER_CASCADE_RT.append(cascade_lifespan)
 
             LIFESPAN_PER_CASCADE.append(cascade_lifespan)
+            CASCADE_SIZE.append(post_count)
+
+            if post_count == 1 and cascade_lifespan > 0:
+                print(f"lifespan: {cascade_lifespan} days, start: {cascade_first_date}, end: {cascade_last_date}")
 
         news_lifespan = (news_last_date - news_first_date).days # calculated in days
         LIFESPAN_PER_NEWS.append(news_lifespan)
@@ -263,4 +269,11 @@ bars = ax.bar(time_lengths, news_number, width=0.8)
 autolabel(bars)
 ax.set_ylabel('Cascade Number'), ax.set_xlabel('Lifespan')
 ax.set_title('Lifespan of Cascade(#post > 1)')
+plt.show()
+
+# [RESULT] cascade lifespan vs cascade size
+plt.scatter(CASCADE_SIZE, LIFESPAN_PER_CASCADE, alpha=0.2)
+plt.xlabel("Cascade Size")
+plt.ylabel("Cascade Lifespan")
+plt.title("Cascade: Size vs. Lifespan")
 plt.show()
