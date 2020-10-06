@@ -23,6 +23,6 @@
     }
   ],
 
-  "data_features_to_collect" : ["news_articles", "tweets", "retweets", "user_profile", "user_timeline_tweets", "user_followers", "user_following", "retweet_cascade", "retweet_user_followers"],
+  "data_features_to_collect" : ["news_articles", "tweets", "retweets", "user_profile", "user_timeline_tweets", "user_followers", "user_following", "retweet_cascade", "retweet_user_followers", "follower_profile"],
   "cascade_time_limitation": 30
 }

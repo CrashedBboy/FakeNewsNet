@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import shutil
 from pathlib import Path
 from twython import TwythonError, TwythonRateLimitError
 
@@ -167,6 +168,111 @@ class UserProfileCollector(DataCollector):
                                      (user_profiles_folder, self.config.twython_connector),
                                      self.config)
 
+class FollowerProfileCollector(DataCollector):
+
+    def __init__(self, config):
+        super(FollowerProfileCollector, self).__init__(config)
+
+    def collect_data(self, choices):
+
+        if os.path.exists(f"{self.config.dump_location}/follower_profile_ids.json"):
+
+            print(f"loads IDs to be fetched from follower_profile_ids.json")
+
+            with open(f"{self.config.dump_location}/follower_profile_ids.json", "r") as id_list_file:
+                final_follower_ids = json.loads(id_list_file.read())
+
+            # set and create dest dir
+            follower_profiles_folder = f"{self.config.dump_location}/follower_profiles"
+            create_dir(follower_profiles_folder)
+
+        else:
+        
+            all_follower_ids = set()
+            parsed_user_ids = set()
+
+            user_followers_dir = f"{self.config.dump_location}/user_followers"
+            rter_followers_dir = f"{self.config.dump_location}/rt_user_followers"
+
+            # check dir existence
+            if not os.path.exists(user_followers_dir):
+                print(f"error! follower list dir doens't exist: {user_followers_dir}")
+                return
+            
+            if not os.path.exists(rter_followers_dir):
+                print(f"error! follower list dir doens't exist: {rter_followers_dir}")
+                return
+
+            # get follower IDs from user_followers/
+            print("get follower IDs from user_followers/")
+            for fn in os.listdir(user_followers_dir):
+
+                uid = int(fn.split(".")[0])
+
+                with open(f"{user_followers_dir}/{fn}", "r") as follower_list_file:
+                    follower_list = json.loads(follower_list_file.read())['followers']
+
+                    # update follower ID set
+                    all_follower_ids.update(set(follower_list))
+
+                    # mark this file has been parsed (prevent being read again at rt_user_followers/)
+                    parsed_user_ids.add(uid)
+
+            # get follower IDs from rt_user_followers/
+            print("get follower IDs from rt_user_followers/")
+            for fn in os.listdir(rter_followers_dir):
+
+                uid = int(fn.split(".")[0])
+
+                if uid in parsed_user_ids:
+                    continue
+
+                with open(f"{rter_followers_dir}/{fn}", "r") as follower_list_file:
+                    follower_list = json.loads(follower_list_file.read())['followers']
+
+                    # update follower ID set
+                    all_follower_ids.update(set(follower_list))
+
+            # set and create dest dir
+            print("set and create dest dir")
+            follower_profiles_folder = f"{self.config.dump_location}/follower_profiles"
+            create_dir(follower_profiles_folder)
+
+            # check profile duplication
+            print("check profile duplication")
+            all_follower_ids = list(all_follower_ids)
+            final_follower_ids = []
+            skipped_count = 0
+
+            all_follower_length = len(all_follower_ids)
+            for (idx, id) in enumerate(all_follower_ids):
+
+                if idx%1000 == 0:
+                    print(f"{idx} / {all_follower_length}")
+
+                if os.path.exists(f"{self.config.dump_location}/user_profiles/{id}.json"):
+
+                    skipped_count += 1
+                    shutil.copyfile(f"{self.config.dump_location}/user_profiles/{id}.json", f"{follower_profiles_folder}/{id}.json")
+                    continue
+
+                if os.path.exists(f"{self.config.dump_location}/rt_user_profiles/{id}.json"):
+
+                    skipped_count += 1
+                    shutil.copyfile(f"{self.config.dump_location}/rt_user_profiles/{id}.json", f"{follower_profiles_folder}/{id}.json")
+                    continue
+
+                final_follower_ids.append(id)
+
+            print(f"Total follower profiles to be fetched: {len(final_follower_ids)}, skipped: {skipped_count}")
+
+            # save download list back to file
+            with open(f"{self.config.dump_location}/follower_profile_ids.json", "w") as id_list_file:
+                id_list_file.write(json.dumps(final_follower_ids))
+
+        # multiprocess_data_collection(dump_user_profile_job, final_follower_ids,
+        #                              (follower_profiles_folder, self.config.twython_connector),
+        #                              self.config)
 
 class UserTimelineTweetsCollector(DataCollector):
 

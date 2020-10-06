@@ -11,6 +11,6 @@
     }
   ],
 
-  "data_features_to_collect" : ["retweet_user_followers"],
+  "data_features_to_collect" : ["follower_profile"],
   "cascade_time_limitation": 30
 }
