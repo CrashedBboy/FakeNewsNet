@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import shutil
+import random
 from pathlib import Path
 from twython import TwythonError, TwythonRateLimitError
 
@@ -175,6 +176,9 @@ class FollowerProfileCollector(DataCollector):
 
     def collect_data(self, choices):
 
+        # number of sampling
+        K = 10
+
         if os.path.exists(f"{self.config.dump_location}/follower_profile_ids.json"):
 
             print(f"loads IDs to be fetched from follower_profile_ids.json")
@@ -187,51 +191,82 @@ class FollowerProfileCollector(DataCollector):
             create_dir(follower_profiles_folder)
 
         else:
-        
-            all_follower_ids = set()
-            parsed_user_ids = set()
 
-            user_followers_dir = f"{self.config.dump_location}/user_followers"
-            rter_followers_dir = f"{self.config.dump_location}/rt_user_followers"
+            if os.path.exists(f"{self.config.dump_location}/follower_sample_map.json"):
 
-            # check dir existence
-            if not os.path.exists(user_followers_dir):
-                print(f"error! follower list dir doens't exist: {user_followers_dir}")
-                return
+                print(f"loads sampled follower IDs from file follower_sample_map.json")
+
+                with open(f"{self.config.dump_location}/follower_sample_map.json", "r") as map_file:
+                    all_sampled_followers = json.loads(map_file.read())
             
-            if not os.path.exists(rter_followers_dir):
-                print(f"error! follower list dir doens't exist: {rter_followers_dir}")
-                return
+            else:
 
-            # get follower IDs from user_followers/
-            print("get follower IDs from user_followers/")
-            for fn in os.listdir(user_followers_dir):
+                all_sampled_followers = {}
 
-                uid = int(fn.split(".")[0])
+                user_followers_dir = f"{self.config.dump_location}/user_followers"
+                rter_followers_dir = f"{self.config.dump_location}/rt_user_followers"
 
-                with open(f"{user_followers_dir}/{fn}", "r") as follower_list_file:
-                    follower_list = json.loads(follower_list_file.read())['followers']
+                # check dir existence
+                if not os.path.exists(user_followers_dir):
+                    print(f"error! follower list dir doens't exist: {user_followers_dir}")
+                    return
+                
+                if not os.path.exists(rter_followers_dir):
+                    print(f"error! follower list dir doens't exist: {rter_followers_dir}")
+                    return
+            
+                # get follower IDs from user_followers/
+                print("get follower IDs from user_followers/")
+                for fn in os.listdir(user_followers_dir):
 
-                    # update follower ID set
-                    all_follower_ids.update(set(follower_list))
+                    uid = int(fn.split(".")[0])
 
-                    # mark this file has been parsed (prevent being read again at rt_user_followers/)
-                    parsed_user_ids.add(uid)
+                    with open(f"{user_followers_dir}/{fn}", "r") as follower_list_file:
+                        follower_list = json.loads(follower_list_file.read())['followers']
 
-            # get follower IDs from rt_user_followers/
-            print("get follower IDs from rt_user_followers/")
-            for fn in os.listdir(rter_followers_dir):
+                        follower_number = len(follower_list)
+                        sampled_followers = None
 
-                uid = int(fn.split(".")[0])
+                        if follower_number == 0:
+                            sampled_followers = []
+                        elif follower_number >= K:
+                            # sample without replacement
+                            sampled_followers = random.sample(follower_list, K)
+                        elif follower_number < K:
+                            # sample with replacement (may have repetition)
+                            sampled_followers = random.choices(follower_list, k = K)
 
-                if uid in parsed_user_ids:
-                    continue
+                        all_sampled_followers[uid] = sampled_followers
 
-                with open(f"{rter_followers_dir}/{fn}", "r") as follower_list_file:
-                    follower_list = json.loads(follower_list_file.read())['followers']
+                # get follower IDs from rt_user_followers/
+                print("get follower IDs from rt_user_followers/")
+                for fn in os.listdir(rter_followers_dir):
 
-                    # update follower ID set
-                    all_follower_ids.update(set(follower_list))
+                    uid = int(fn.split(".")[0])
+
+                    if uid in all_sampled_followers:
+                        continue
+
+                    with open(f"{rter_followers_dir}/{fn}", "r") as follower_list_file:
+                        follower_list = json.loads(follower_list_file.read())['followers']
+
+                        follower_number = len(follower_list)
+                        sampled_followers = None
+
+                        if follower_number == 0:
+                            sampled_followers = []
+                        elif follower_number >= K:
+                            # sample without replacement
+                            sampled_followers = random.sample(follower_list, K)
+                        elif follower_number < K:
+                            # sample with replacement (may have repetition)
+                            sampled_followers = random.choices(follower_list, k = K)
+
+                        all_sampled_followers[uid] = sampled_followers
+
+                # save follower sample map back to file
+                with open(f"{self.config.dump_location}/follower_sample_map.json", "w") as sample_map_file:
+                    sample_map_file.write(json.dumps(all_sampled_followers))
 
             # set and create dest dir
             print("set and create dest dir")
@@ -240,14 +275,16 @@ class FollowerProfileCollector(DataCollector):
 
             # check profile duplication
             print("check profile duplication")
-            all_follower_ids = list(all_follower_ids)
+            all_follower_ids = []
+            for li in all_sampled_followers.values():
+                all_follower_ids += li
             final_follower_ids = []
             skipped_count = 0
 
             all_follower_length = len(all_follower_ids)
             for (idx, id) in enumerate(all_follower_ids):
 
-                if idx%1000 == 0:
+                if idx%100 == 0:
                     print(f"{idx} / {all_follower_length}")
 
                 if os.path.exists(f"{self.config.dump_location}/user_profiles/{id}.json"):
@@ -267,7 +304,7 @@ class FollowerProfileCollector(DataCollector):
             print(f"Total follower profiles to be fetched: {len(final_follower_ids)}, skipped: {skipped_count}")
 
             # save download list back to file
-            with open(f"{self.config.dump_location}/follower_profile_ids.json", "w") as id_list_file:
+            with open(f"{self.config.dump_location}/follower_download_ids.json", "w") as id_list_file:
                 id_list_file.write(json.dumps(final_follower_ids))
 
         # multiprocess_data_collection(dump_user_profile_job, final_follower_ids,
