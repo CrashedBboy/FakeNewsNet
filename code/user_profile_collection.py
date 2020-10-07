@@ -176,9 +176,6 @@ class FollowerProfileCollector(DataCollector):
 
     def collect_data(self, choices):
 
-        # number of sampling
-        K = 10
-
         if os.path.exists(f"{self.config.dump_location}/follower_profile_ids.json"):
 
             print(f"loads IDs to be fetched from follower_profile_ids.json")
@@ -192,81 +189,15 @@ class FollowerProfileCollector(DataCollector):
 
         else:
 
-            if os.path.exists(f"{self.config.dump_location}/follower_sample_map.json"):
+            if not os.path.exists(f"{self.config.dump_location}/follower_sample_map.json"):
 
-                print(f"loads sampled follower IDs from file follower_sample_map.json")
+                print(f"can find file {self.config.dump_location}/follower_sample_map.json, please do sampling first")
+                return
 
-                with open(f"{self.config.dump_location}/follower_sample_map.json", "r") as map_file:
-                    all_sampled_followers = json.loads(map_file.read())
-            
-            else:
+            print(f"loads sampled follower IDs from file follower_sample_map.json")
 
-                all_sampled_followers = {}
-
-                user_followers_dir = f"{self.config.dump_location}/user_followers"
-                rter_followers_dir = f"{self.config.dump_location}/rt_user_followers"
-
-                # check dir existence
-                if not os.path.exists(user_followers_dir):
-                    print(f"error! follower list dir doens't exist: {user_followers_dir}")
-                    return
-                
-                if not os.path.exists(rter_followers_dir):
-                    print(f"error! follower list dir doens't exist: {rter_followers_dir}")
-                    return
-            
-                # get follower IDs from user_followers/
-                print("get follower IDs from user_followers/")
-                for fn in os.listdir(user_followers_dir):
-
-                    uid = int(fn.split(".")[0])
-
-                    with open(f"{user_followers_dir}/{fn}", "r") as follower_list_file:
-                        follower_list = json.loads(follower_list_file.read())['followers']
-
-                        follower_number = len(follower_list)
-                        sampled_followers = None
-
-                        if follower_number == 0:
-                            sampled_followers = []
-                        elif follower_number >= K:
-                            # sample without replacement
-                            sampled_followers = random.sample(follower_list, K)
-                        elif follower_number < K:
-                            # sample with replacement (may have repetition)
-                            sampled_followers = random.choices(follower_list, k = K)
-
-                        all_sampled_followers[uid] = sampled_followers
-
-                # get follower IDs from rt_user_followers/
-                print("get follower IDs from rt_user_followers/")
-                for fn in os.listdir(rter_followers_dir):
-
-                    uid = int(fn.split(".")[0])
-
-                    if uid in all_sampled_followers:
-                        continue
-
-                    with open(f"{rter_followers_dir}/{fn}", "r") as follower_list_file:
-                        follower_list = json.loads(follower_list_file.read())['followers']
-
-                        follower_number = len(follower_list)
-                        sampled_followers = None
-
-                        if follower_number == 0:
-                            sampled_followers = []
-                        elif follower_number >= K:
-                            # sample without replacement
-                            sampled_followers = random.sample(follower_list, K)
-                        elif follower_number < K:
-                            # sample with replacement (may have repetition)
-                            sampled_followers = random.choices(follower_list, k = K)
-
-                        all_sampled_followers[uid] = sampled_followers
-
-                # save follower sample map back to file
-                with open(f"{self.config.dump_location}/follower_sample_map.json", "w") as sample_map_file:
-                    sample_map_file.write(json.dumps(all_sampled_followers))
+            with open(f"{self.config.dump_location}/follower_sample_map.json", "r") as map_file:
+                all_sampled_followers = json.loads(map_file.read())
 
             # set and create dest dir
             print("set and create dest dir")
