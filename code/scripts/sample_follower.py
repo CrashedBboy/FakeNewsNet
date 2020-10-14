@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 dataset_dir = "../fakenewsnet_dataset/"
 dataset_dir = path.abspath( path.join(path.dirname(__file__), dataset_dir))
 
-K = 10 # sample number
+K = 3 # sample number
 
 all_sampled_followers = {}
 
@@ -35,9 +35,6 @@ for idx, fn in enumerate(file_list):
 
     if idx%1000 == 0:
         print(f"{idx} / {file_number}")
-
-    if idx > 1000:
-        break
 
     uid = int(fn.split(".")[0])
 
