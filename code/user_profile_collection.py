@@ -74,6 +74,8 @@ def dump_user_recent_tweets_job(user_id, save_location, twython_connector: Twyth
         finally:
             if profile_info:
                 json.dump(profile_info, open("{}/{}.json".format(save_location, user_id), "w"))
+            else:
+                json.dump({}, open("{}/{}.json".format(save_location, user_id), "w"))
 
 
 def fetch_user_follower_ids(user_id, twython_connection):
@@ -238,9 +240,9 @@ class FollowerProfileCollector(DataCollector):
             with open(f"{self.config.dump_location}/follower_download_ids.json", "w") as id_list_file:
                 id_list_file.write(json.dumps(final_follower_ids))
 
-        # multiprocess_data_collection(dump_user_profile_job, final_follower_ids,
-        #                              (follower_profiles_folder, self.config.twython_connector),
-        #                              self.config)
+        multiprocess_data_collection(dump_user_profile_job, final_follower_ids,
+                                     (follower_profiles_folder, self.config.twython_connector),
+                                     self.config)
 
 class UserTimelineTweetsCollector(DataCollector):
 
@@ -248,18 +250,23 @@ class UserTimelineTweetsCollector(DataCollector):
         super(UserTimelineTweetsCollector, self).__init__(config)
 
     def collect_data(self, choices):
-        all_user_ids = set()
 
-        for choice in choices:
-            all_user_ids.update(get_user_ids_in_folder(
-                "{}/{}/{}".format(self.config.dump_location, choice["news_source"], choice["label"])))
+        if not os.path.exists(f"{self.config.dump_location}/all_user_id.json"):
 
-        user_timeline_tweets_folder = "{}/{}".format(self.config.dump_location, "user_timeline_tweets")
-        create_dir(user_timeline_tweets_folder)
+            print(f"all_user_id.json not found")
+            return
 
-        multiprocess_data_collection(dump_user_recent_tweets_job, list(all_user_ids), (user_timeline_tweets_folder,
-                                                                                       self.config.twython_connector),
-                                     self.config)
+        print(f"loads IDs to be fetched from all_user_id.json")
+
+        with open(f"{self.config.dump_location}/all_user_id.json", "r") as id_list_file:
+            all_user_ids = json.loads(id_list_file.read())
+
+        # set and create dest dir
+        timeline_folder = f"{self.config.dump_location}/user_timeline_tweets"
+        create_dir(timeline_folder)
+
+        multiprocess_data_collection(dump_user_recent_tweets_job, all_user_ids, 
+                    (timeline_folder,self.config.twython_connector), self.config)
 
 
 class UserFollowersCollector(DataCollector):
