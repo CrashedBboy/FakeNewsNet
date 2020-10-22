@@ -1,3 +1,7 @@
+###
+# collect all user IDs in order to download their timeline
+# STATISTICS: #users(#source tweet authors, #spreader)
+###
 import os
 from os import path
 import random
@@ -29,7 +33,13 @@ print(f"{len(ids_retweeter)} users in Retweeter folder")
 all_user_ids.update(ids_retweeter)
 ids_retweeter = None
 
-ids_follower = [ int(fn.split(".")[0]) for fn in os.listdir(f"{dataset_dir}/follower_profiles") ]
+print(f"{len(all_user_ids)} users in total who joined news dissemination")
+
+# 73384 users in Tweeter folder
+# 76862 users in Retweeter folder
+# 143125 users in total who joined news dissemination
+
+ids_follower = [ int(fn.split(".")[0]) for fn in os.listdir(f"{dataset_dir}/follower_profiles") ] # sampled followers
 ids_follower = set(ids_follower)
 print(f"{len(ids_follower)} users in follower folder")
 

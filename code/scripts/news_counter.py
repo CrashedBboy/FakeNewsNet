@@ -1,3 +1,9 @@
+###
+# Statistics: #fake news
+# #fake news having propagation network (having at least one post)
+###
+
+
 import os
 from os import path
 
@@ -30,7 +36,8 @@ for item in os.listdir(NEWS_DIR):
                     source_dict[source] = 1
 
             tweet_dir_path = path.join(news_dir_path, "tweets")
-            if path.exists(tweet_dir_path):
+            retweet_dir_path = path.join(news_dir_path, "retweets")
+            if path.exists(tweet_dir_path) and path.exists(retweet_dir_path):
                 tweeted_news_count += 1
 
 print(f"total news: {total_news_count}, existed news: {exist_news_count}, tweeted news: {tweeted_news_count}")

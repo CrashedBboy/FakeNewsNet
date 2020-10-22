@@ -7,12 +7,12 @@
 
 ## 1. Global Statistics
 
-* [ ] #fake news
-* [ ] #fake news having propagation network (having at least one post)
-* [ ] #users
-    - [ ] #source tweet authors
-    - [ ] #spreader
-* [ ] #source tweets ( = number of cascade)
+* [x] #fake news
+* [x] #fake news having propagation network (having at least one post)
+* [x] #users
+    - [x] #source tweet authors
+    - [x] #spreader
+* [x] #source tweets ( = number of cascade)
     - [ ] #Quotes
     - [ ] #Replies
 * [ ] #Retweets
