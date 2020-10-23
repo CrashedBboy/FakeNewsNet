@@ -30,16 +30,10 @@ For propagation network of **a dissemination cascade**
 
 ## 3. Cascade Network - Temporal
 
-For propagation nwtwork of **a news article** (consists of multiple cascades)
-* [ ] average time difference between adjacent nodes
-* [ ] lifespan of news
-* [ ] average time difference between source tweets
-* [ ] lifespan of deepest cascade
-
 For propagation network of **a dissemination cascade**
-* [ ] average time difference between adjacent node
-* [ ] time difference between source tweet and its first response
-* [ ] lifespan
+* [x] average time difference between adjacent node
+* [x] time difference between source tweet and its first response
+* [x] lifespan
 
 ## 4. Social Network
 
@@ -56,18 +50,18 @@ For social network constructed by users in each **dissemination cascade**:
 ## 5. User Profile
 
 Available attributes:
-* [ ] location
-* [ ] url
-* [ ] protected
-* [ ] followers_count
-* [ ] friends_count
-* [ ] listed_cout
-* [ ] created_at
-* [ ] favourites_count
-* [ ] verified
-* [ ] statuses_count
-* [ ] default_profile
-* [ ] default_profile_image
+* location
+* url
+* protected
+* followers_count
+* friends_count
+* listed_cout
+* created_at
+* favourites_count
+* verified
+* statuses_count
+* default_profile
+* default_profile_image
 
 ## 6. Text Content
 * [ ] sentiment ratio (#positive / #negative)

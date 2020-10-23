@@ -8,7 +8,6 @@ import json
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
 
 
 NEWS_DIR = "../../fakenewsnet_dataset/politifact/fake"
