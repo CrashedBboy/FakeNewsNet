@@ -13,8 +13,8 @@
     - [x] #source tweet authors
     - [x] #spreader
 * [x] #source tweets ( = number of cascade)
-    - [ ] #Quotes
-    - [ ] #Replies
+    - [x] #Quotes
+    - [x] #Replies
 * [ ] #Retweets
 
 ## 2. Cascade Network - Structural

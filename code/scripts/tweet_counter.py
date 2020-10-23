@@ -4,24 +4,31 @@ from os import path
 import json
 
 NEWS_DIR = "../fakenewsnet_dataset/politifact/fake"
-RESULT = "../fakenewsnet_dataset/politifact/fake/tweet.json"
 
-tweet_count = 0
+source_tweet_count = 0
+quote_count = 0
+reply_count = 0
 for item in os.listdir(NEWS_DIR):
     news_dir_path = path.abspath( path.join(path.dirname(__file__), NEWS_DIR, item) )
     
     if path.isdir(news_dir_path):
-        news_path = path.join(news_dir_path, "news content.json")
-        if path.exists(news_path):
 
-            tweet_dir_path = path.join(news_dir_path, "tweets")
+        if not path.exists(f"{news_dir_path}/news content.json"):
+            continue
+        if not path.exists(f"{news_dir_path}/tweets"):
+            continue
+        if not path.exists(f"{news_dir_path}/retweets"):
+            continue
 
-            if path.exists(tweet_dir_path):
-                tweet_count += len(os.listdir(tweet_dir_path))
+        source_tweet_count += len(os.listdir(f"{news_dir_path}/tweets"))
 
-print(f"total tweets in {NEWS_DIR}: {tweet_count}")
+        with open(f"{news_dir_path}/tweet_quote_map.json", "r") as map_file:
+            mapping = json.loads(map_file.read())
+            quote_count += mapping["count"]
 
-result_file_path = path.abspath( path.join(path.dirname(__file__), RESULT) )
+        with open(f"{news_dir_path}/tweet_reply_map.json", "r") as map_file:
+            mapping = json.loads(map_file.read())
+            reply_count += mapping["count"]
 
-with open(result_file_path, "w") as result_file:
-    result_file.write(json.dumps({'tweet_count': tweet_count}, indent=4))
+print(f"source tweet number: {source_tweet_count}, including {quote_count} quotes and {reply_count} replies")
+# source tweet number: 119009, including 131 quotes and 189 replies
