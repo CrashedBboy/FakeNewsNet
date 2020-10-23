@@ -23,11 +23,10 @@ For propagation nwtwork of **a news article** (consists of multiple cascades)
 * [x] fraction of cascade having at least 2 nodes
 
 For propagation network of **a dissemination cascade**
-* [ ] Tree depth
-* [ ] #user
-* [ ] #post (our prediction target)
-* [ ] maximum nide out-degree
-* [ ] depth of node with max-degree
+* [x] Tree depth
+* [x] #user
+* [x] #post (our prediction target)
+* [x] maximum node out-degree
 
 ## 3. Cascade Network - Temporal
 
