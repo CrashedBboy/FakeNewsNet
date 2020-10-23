@@ -20,7 +20,7 @@
 ## 2. Cascade Network - Structural
 
 For propagation nwtwork of **a news article** (consists of multiple cascades)
-* [ ] fraction of cascade having at least 2 nodes
+* [x] fraction of cascade having at least 2 nodes
 
 For propagation network of **a dissemination cascade**
 * [ ] Tree depth
