@@ -15,7 +15,7 @@
 * [x] #source tweets ( = number of cascade)
     - [x] #Quotes
     - [x] #Replies
-* [ ] #Retweets
+* [x] #Retweets
 
 ## 2. Cascade Network - Structural
 

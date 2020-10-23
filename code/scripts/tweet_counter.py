@@ -1,3 +1,8 @@
+####
+# Statistics: #source tweet, #retweet
+####
+
+
 import os
 from os import path
 
@@ -8,6 +13,7 @@ NEWS_DIR = "../fakenewsnet_dataset/politifact/fake"
 source_tweet_count = 0
 quote_count = 0
 reply_count = 0
+retweet_count = 0
 for item in os.listdir(NEWS_DIR):
     news_dir_path = path.abspath( path.join(path.dirname(__file__), NEWS_DIR, item) )
     
@@ -30,5 +36,11 @@ for item in os.listdir(NEWS_DIR):
             mapping = json.loads(map_file.read())
             reply_count += mapping["count"]
 
+        for rt_list_fn in os.listdir(f"{news_dir_path}/retweets"):
+            with open(f"{news_dir_path}/retweets/{rt_list_fn}", "r") as rt_file:
+                retweet_count += len(json.loads(rt_file.read())["retweets"])
+
 print(f"source tweet number: {source_tweet_count}, including {quote_count} quotes and {reply_count} replies")
+print(f"retweet number: {retweet_count}")
 # source tweet number: 119009, including 131 quotes and 189 replies
+# retweet number: 106243
