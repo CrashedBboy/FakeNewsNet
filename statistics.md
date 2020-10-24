@@ -34,7 +34,7 @@ For propagation network of **a dissemination cascade**
 * [x] average time difference between adjacent node
 * [x] time difference between source tweet and its first response
 * [x] lifespan
-* [ ] post time distribution
+* [x] post time distribution
 
 ## 4. Social Network
 
