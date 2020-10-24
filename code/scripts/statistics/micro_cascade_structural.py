@@ -88,15 +88,15 @@ sizes = np.array(sizes)
 users = np.array(users)
 max_degrees = np.array(max_degrees)
 
-print(f"tree depth: min={depths.min()}, max={depths.max()}, mean={depths.mean()}, median={np.median(depths)}")
-print(f"cascade size: min={sizes.min()}, max={sizes.max()}, mean={sizes.mean()}, median={np.median(sizes)}")
-print(f"user number: min={users.min()}, max={users.max()}, mean={users.mean()}, median={np.median(users)}")
-print(f"max degrees: min={max_degrees.min()}, max={max_degrees.max()}, mean={max_degrees.mean()}, median={np.median(max_degrees)}")
+print(f"tree depth: min={depths.min()}, max={depths.max()}, mean={depths.mean()}, Q1 = {np.percentile(depths, 25)}, median={np.median(depths)}, Q3 = {np.percentile(depths, 75)}")
+print(f"cascade size: min={sizes.min()}, max={sizes.max()}, mean={sizes.mean()}, Q1 = {np.percentile(sizes, 25)}, median={np.median(sizes)}, Q3 = {np.percentile(sizes, 75)}, 97.7% = {np.percentile(sizes, 97.7)}")
+print(f"user number: min={users.min()}, max={users.max()}, mean={users.mean()}, Q1 = {np.percentile(users, 25)}, median={np.median(users)}, Q1 = {np.percentile(users, 75)}")
+print(f"max degrees: min={max_degrees.min()}, max={max_degrees.max()}, mean={max_degrees.mean()}, Q1 = {np.percentile(max_degrees, 25)}, median={np.median(max_degrees)}, Q1 = {np.percentile(max_degrees, 75)}")
 
-# tree depth: min=1, max=43, mean=1.2090589692389353, median=1.0
-# cascade size: min=1, max=163, mean=1.89783383464348, median=1.0
-# user number: min=1, max=163, mean=1.878581839934619, median=1.0
-# max degrees: min=0, max=100, mean=0.6746792036330241, median=0.0
+# tree depth: min=1, max=43, mean=1.2090589692389353, Q1 = 1.0, median=1.0, Q3 = 1.0
+# cascade size: min=1, max=163, mean=1.89783383464348, Q1 = 1.0, median=1.0, Q3 = 1.0, 97.7% = 8.0
+# user number: min=1, max=163, mean=1.878581839934619, Q1 = 1.0, median=1.0, Q1 = 1.0
+# max degrees: min=0, max=100, mean=0.6746792036330241, Q1 = 0.0, median=0.0, Q1 = 0.0
 
 ##### tree depth vs cascade size
 
