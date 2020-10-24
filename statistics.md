@@ -40,13 +40,12 @@ For propagation network of **a dissemination cascade**
 
 For social network constructed by users in each **dissemination cascade**:
 
-* [ ] out-degree centrality
-* [ ] in-degree centrality
-* [ ] closeness centrality
-* [ ] betweenness centrality
-* [ ] graph diameter
-* [ ] #node ( = #user)
-* [ ] #edge
+* [x] out-degree centrality
+* [x] in-degree centrality
+* [x] closeness centrality
+* [x] betweenness centrality
+* [x] #node ( = #user)
+* [x] #edge
 
 ## 5. User Profile
 

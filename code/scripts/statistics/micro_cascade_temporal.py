@@ -1,5 +1,8 @@
 ####
-# Statistics: tree depth, #user, #post, max out-degree, depth of node with max degree
+# Statistics:
+# average time difference between adjacent node
+# time difference between source tweet and its first response
+# post time distribution
 ####
 
 import os
