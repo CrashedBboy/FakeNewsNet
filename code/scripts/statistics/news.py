@@ -9,8 +9,8 @@ from os import path
 
 import json
 
-NEWS_DIR = "../fakenewsnet_dataset/politifact/fake"
-RESULT = "../fakenewsnet_dataset/politifact/fake/source.json"
+NEWS_DIR = "../../fakenewsnet_dataset/politifact/fake"
+RESULT = "../../fakenewsnet_dataset/politifact/fake/source.json"
 
 total_news_count = 0
 exist_news_count = 0
@@ -41,8 +41,9 @@ for item in os.listdir(NEWS_DIR):
                 tweeted_news_count += 1
 
 print(f"total news: {total_news_count}, existed news: {exist_news_count}, tweeted news: {tweeted_news_count}")
+# total news: 432, existed news: 376, tweeted news: 339
 
-result_file_path = path.abspath( path.join(path.dirname(__file__), RESULT) )
+# result_file_path = path.abspath( path.join(path.dirname(__file__), RESULT) )
 
-with open(result_file_path, "w") as result_file:
-    result_file.write(json.dumps(source_dict, indent=4))
+# with open(result_file_path, "w") as result_file:
+#     result_file.write(json.dumps(source_dict, indent=4))
