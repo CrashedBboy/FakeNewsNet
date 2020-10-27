@@ -66,7 +66,6 @@ Available attributes:
 ## 6. Text Content
 * [ ] sentiment ratio (#positive / #negative)
 * [ ] average sentiment score
-* [ ] word frequency: word cloud , TF-IDF
+* [x] word frequency: word cloud , TF-IDF
 * [ ] #word per sentence / article / post
-* [ ] #sentence per article / post
 * [ ] #hashtag, links, @mentioned per post, cascade
