@@ -3,6 +3,7 @@
 
 # downloaded dataset
 code/fakenewsnet_dataset/
+exported/
 
 # downloading log
 *.log
